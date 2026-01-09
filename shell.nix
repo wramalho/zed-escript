@@ -1,5 +1,7 @@
 { pkgs ? import <nixpkgs> {} }:
 
+# Escript LSP Development Shell
+# Usage: nix-shell
 pkgs.mkShell {
   buildInputs = with pkgs; [
     nodejs_22
