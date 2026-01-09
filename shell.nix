@@ -1,7 +1,5 @@
 { pkgs ? import <nixpkgs> {} }:
 
-# Escript LSP Development Shell
-# Usage: nix-shell
 pkgs.mkShell {
   buildInputs = with pkgs; [
     nodejs_22
@@ -10,6 +8,8 @@ pkgs.mkShell {
     git
     python3
     rustup
+    rustc
+    cargo
   ] ++ (if pkgs.stdenv.isDarwin then [
     pkgs.darwin.apple_sdk.frameworks.CoreServices
     pkgs.darwin.apple_sdk.frameworks.Security

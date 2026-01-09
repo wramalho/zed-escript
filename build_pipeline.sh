@@ -51,6 +51,29 @@ echo "Injecting extension path into Rust source: $ABS_PATH"
 mkdir -p zed-escript/src
 echo "pub const EXTENSION_PATH: &str = \"$ABS_PATH\";" > zed-escript/src/constants.rs
 
+# Pre-compile the Rust extension to WASM
+# This bypasses the need for Zed to find 'rustup' in its PATH, resolving "Failed to compile" errors.
+echo "Compiling Zed extension to WASM..."
+if command -v cargo &> /dev/null; then
+    pushd zed-escript
+    # Check if target is installed, if not try to add it (best effort)
+    if command -v rustup &> /dev/null; then
+        rustup target add wasm32-wasi || true
+    fi
+
+    cargo build --target wasm32-wasi --release
+
+    if [ -f target/wasm32-wasi/release/escript.wasm ]; then
+        cp target/wasm32-wasi/release/escript.wasm extension.wasm
+        echo "Successfully compiled extension.wasm"
+    else
+        echo "WARNING: Failed to compile extension.wasm. Zed will attempt to compile it on load (which requires rustup)."
+    fi
+    popd
+else
+    echo "WARNING: Cargo not found. Skipping pre-compilation of extension.wasm."
+fi
+
 echo "Zed extension source is ready in 'zed-escript/'."
 echo ""
 echo "To install in Zed:"

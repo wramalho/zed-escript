@@ -15,14 +15,20 @@ impl zed::Extension for EscriptExtension {
         _language_server_id: &zed::LanguageServerId,
         worktree: &zed::Worktree,
     ) -> Result<zed::Command, String> {
+        eprintln!("EscriptExtension: Starting language server command...");
+
         let node_path = zed::node_binary_path()
             .ok()
             .or_else(|| worktree.which("node"))
             .ok_or_else(|| "Node.js must be installed and available in PATH or via zed::node_binary_path".to_string())?;
 
+        eprintln!("EscriptExtension: Node path resolved: {:?}", node_path);
+
         let server_script = "server/out/index.js";
         let extension_path = Path::new(constants::EXTENSION_PATH);
         let server_path = extension_path.join(server_script);
+
+        eprintln!("EscriptExtension: Server script path: {:?}", server_path);
 
         // Note: We cannot verify if the file exists here because we are running inside a WASM sandbox
         // which may not have access to the absolute path on the host system.
