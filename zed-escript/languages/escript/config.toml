@@ -1,0 +1,5 @@
+name = "Escript"
+grammar = "escript"
+path_suffixes = ["src", "inc", "em"]
+line_comments = ["// "]
+block_comments = ["/*", "*/"]

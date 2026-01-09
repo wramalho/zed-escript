@@ -1,0 +1,13 @@
+id = "escript"
+name = "Escript"
+version = "0.0.1"
+schema_version = 1
+authors = ["Your Name <you@example.com>"]
+description = "Escript support for Zed"
+repository = "https://github.com/polserver/vscode-escript"
+
+[grammars.escript]
+# This is a placeholder. Zed requires a tree-sitter grammar.
+# Since we don't have one for Escript, we use Javascript as a close approximation for now.
+repository = "https://github.com/tree-sitter/tree-sitter-javascript"
+rev = "f1e5a09b8d9621500909d7d130639d6d54839c63"
