@@ -1,6 +1,19 @@
 #!/bin/bash
 set -e
 
+# Pre-flight checks
+if ! command -v cargo &> /dev/null; then
+    echo "WARNING: 'cargo' not found. Zed requires Rust/Cargo to compile the extension."
+    echo "If you are in the nix-shell, ensure 'rustup' is set up."
+fi
+
+if command -v rustup &> /dev/null; then
+    if ! rustup target list --installed | grep -q "wasm32-wasi" && ! rustup target list --installed | grep -q "wasm32-wasip1"; then
+        echo "WARNING: 'wasm32-wasi' target not found. Zed extension compilation requires this target."
+        echo "Run: rustup target add wasm32-wasi"
+    fi
+fi
+
 # Build the LSP server
 echo "Building LSP server..."
 npm install
@@ -29,6 +42,13 @@ cp -r server/out zed-escript/server/
 cp -r server/node_modules zed-escript/server/
 cp package.json zed-escript/server/
 
+# Inject the absolute path into the Rust code
+# This is required because the WASM extension cannot easily determine its host path.
+ABS_PATH=$(pwd)/zed-escript
+echo "Injecting extension path into Rust source: $ABS_PATH"
+mkdir -p zed-escript/src
+echo "pub const EXTENSION_PATH: &str = \"$ABS_PATH\";" > zed-escript/src/constants.rs
+
 echo "Zed extension source is ready in 'zed-escript/'."
 echo ""
 echo "To install in Zed:"
@@ -39,3 +59,4 @@ echo "4. Select the 'zed-escript' directory created by this script."
 echo ""
 echo "Note: You must have 'node' installed and available in your PATH for the extension to work,"
 echo "or Zed must be able to find it."
+echo "IMPORTANT: If you move the 'zed-escript' folder, you MUST re-run this script to update the path."

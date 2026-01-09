@@ -1,13 +1,13 @@
 use zed_extension_api as zed;
-use std::fs;
+use std::path::Path;
 
-struct EscriptExtension {
-}
+mod constants;
+
+struct EscriptExtension;
 
 impl zed::Extension for EscriptExtension {
     fn new() -> Self {
-        Self {
-        }
+        Self
     }
 
     fn language_server_command(
@@ -21,20 +21,12 @@ impl zed::Extension for EscriptExtension {
             .ok_or_else(|| "Node.js must be installed and available in PATH or via zed::node_binary_path".to_string())?;
 
         let server_script = "server/out/index.js";
+        let extension_path = Path::new(constants::EXTENSION_PATH);
+        let server_path = extension_path.join(server_script);
 
-        // We look for the server in the current working directory, which for a Dev Extension
-        // is the root of the extension folder.
-        let current_dir = std::env::current_dir()
-            .map_err(|e| format!("Failed to get current directory: {}", e))?;
-
-        let server_path = current_dir.join(server_script);
-
-        if !server_path.exists() {
-             return Err(format!(
-                "Server script not found at {:?}. Please ensure the extension is installed correctly with the 'server' directory.",
-                server_path
-            ));
-        }
+        // Note: We cannot verify if the file exists here because we are running inside a WASM sandbox
+        // which may not have access to the absolute path on the host system.
+        // We rely on the process spawn to fail if the path is invalid.
 
         Ok(zed::Command {
             command: node_path,
