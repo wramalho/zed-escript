@@ -8,9 +8,11 @@ if ! command -v cargo &> /dev/null; then
 fi
 
 if command -v rustup &> /dev/null; then
-    if ! rustup target list --installed | grep -q "wasm32-wasi" && ! rustup target list --installed | grep -q "wasm32-wasip1"; then
-        echo "WARNING: 'wasm32-wasi' target not found. Zed extension compilation requires this target."
-        echo "Run: rustup target add wasm32-wasi"
+    INSTALLED_TARGETS=$(rustup target list --installed)
+    if ! echo "$INSTALLED_TARGETS" | grep -q "wasm32-wasi" && ! echo "$INSTALLED_TARGETS" | grep -q "wasm32-wasip1"; then
+        echo "WARNING: 'wasm32-wasi' or 'wasm32-wasip1' target not found."
+        echo "Zed extension compilation requires a WASM target."
+        echo "Run: rustup target add wasm32-wasi wasm32-wasip1"
     fi
 fi
 
