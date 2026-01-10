@@ -11,9 +11,9 @@ pkgs.mkShell {
     rustc
     cargo
   ] ++ (if pkgs.stdenv.isDarwin then [
-    pkgs.darwin.apple_sdk.frameworks.CoreServices
-    pkgs.darwin.apple_sdk.frameworks.Security
-    pkgs.darwin.apple_sdk.frameworks.CoreFoundation
+    pkgs.darwin.apple_sdk_12_3.frameworks.CoreServices
+    pkgs.darwin.apple_sdk_12_3.frameworks.Security
+    pkgs.darwin.apple_sdk_12_3.frameworks.CoreFoundation
     pkgs.libiconv
   ] else []);
 
